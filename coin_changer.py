@@ -6,8 +6,26 @@ from tkinter import filedialog
 from bs4 import BeautifulSoup
 # for last message box
 import ctypes
-#for sleep
+#for sleep, file interactions and json
 import time
+import os
+import json
+# checking if the directory Enrique-Coin-Changer
+# exist or not.
+data = None
+file_path = None
+
+path = os.getenv('APPDATA') + "\Enrique-Coin-Changer"
+if not os.path.isdir(path):
+    os.makedirs(path)
+    # if the Enrique-Coin-Changer directory is 
+    # not present then create it.
+else:
+    if os.path.exists(path + "\config.json"):
+        with open(path + "\config.json", "r") as read_file:
+            data = json.load(read_file)
+            if data['filePath']:
+                file_path = data['filePath']
 
 print("Welcome!")
 time.sleep(1)
@@ -19,14 +37,15 @@ print("and boom your done")
 time.sleep(1)
 print("Welp. . . .  here goes nothing")
 
-# Begin of file prompt code
-root = tk.Tk()
-# Hides root element which causes a window to popup
-root.withdraw()
+if not (file_path):
+    # Begin of file prompt code
+    root = tk.Tk()
+    # Hides root element which causes a window to popup
+    root.withdraw()
 
-file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename()
 
-# End of file prompt code
+    # End of file prompt code
 
 time.sleep(1)
 print("Loading file")
@@ -39,7 +58,7 @@ if(xmlFile):
     coins = xmlFile.find_all('coins')
     # always returns multiple entries
     for coin in coins:
-        coin.string.replace_with('999999999')
+        coin.string.replace_with('2000000000')
     time.sleep(1)
     print("Saving file")
     # open with with write and save
@@ -47,5 +66,12 @@ if(xmlFile):
         f.write(str(xmlFile))
 else:
     print('ERROR suck it fucker')
+
+jsonOutput = {
+    "filePath" : file_path,
+}
+if os.path.isdir(path):
+    with open(path + "\config.json", "w") as outfile:
+        json.dump(jsonOutput, outfile)
 
 ctypes.windll.user32.MessageBoxW(0, "You're now either rich or your save file is fucked", "Finished", 0)
